@@ -1,0 +1,38 @@
+name: Deploy app-ads.txt to Root Domain
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app-ads.txt'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v3
+        with:
+          path: quickwhatsapp-app-ads
+
+      - name: Checkout main GitHub Pages repository
+        uses: actions/checkout@v3
+        with:
+          repository: Ahmed0Medhat/Ahmed0Medhat.github.io
+          token: ${{ secrets.PAT_TOKEN }}
+          path: github-io
+
+      - name: Copy app-ads.txt to root repository
+        run: |
+          cp quickwhatsapp-app-ads/app-ads.txt github-io/app-ads.txt
+
+      - name: Commit and push changes
+        run: |
+          cd github-io
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add app-ads.txt
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update app-ads.txt from quickwhatsapp-app-ads"
+          git push
